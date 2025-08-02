@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36221.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iBartender.API", "src\iBartender.API\iBartender.API.csproj", "{69C8E780-556C-4F2B-9405-5F077914DFD3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iBartender.Application", "src\iBartender.Application\iBartender.Application.csproj", "{2E4C4423-7CDA-4034-B125-7E5FEEE4C5EE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iBartender.Core", "src\iBartender.Core\iBartender.Core.csproj", "{1553C20B-4367-4756-BDE8-F4B9B2FA4BE3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iBartender.Persistence", "src\iBartender.Persistence\iBartender.Persistence.csproj", "{2C52080A-B725-4DCF-B77D-F4A33858C184}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{69C8E780-556C-4F2B-9405-5F077914DFD3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69C8E780-556C-4F2B-9405-5F077914DFD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69C8E780-556C-4F2B-9405-5F077914DFD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69C8E780-556C-4F2B-9405-5F077914DFD3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E4C4423-7CDA-4034-B125-7E5FEEE4C5EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E4C4423-7CDA-4034-B125-7E5FEEE4C5EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E4C4423-7CDA-4034-B125-7E5FEEE4C5EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E4C4423-7CDA-4034-B125-7E5FEEE4C5EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1553C20B-4367-4756-BDE8-F4B9B2FA4BE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1553C20B-4367-4756-BDE8-F4B9B2FA4BE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1553C20B-4367-4756-BDE8-F4B9B2FA4BE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1553C20B-4367-4756-BDE8-F4B9B2FA4BE3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C52080A-B725-4DCF-B77D-F4A33858C184}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C52080A-B725-4DCF-B77D-F4A33858C184}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C52080A-B725-4DCF-B77D-F4A33858C184}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C52080A-B725-4DCF-B77D-F4A33858C184}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8A0125A5-E948-4A41-B168-19163187548D}
+	EndGlobalSection
+EndGlobal
