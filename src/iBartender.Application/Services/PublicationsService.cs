@@ -65,15 +65,15 @@ namespace iBartender.Application.Services
                 filePaths.Add(Path.Combine("Publications", newName));
             }
 
-            var newId = Guid.NewGuid();
-
-            var newPublication = Publication.Create(
-                newId,
-                userId,
-                text,
-                filePaths,
-                DateTime.Now.ToUniversalTime(),
-                false);
+            var newPublication = new Publication
+            {
+                Id = Guid.CreateVersion7(),
+                UserId = userId,
+                Text = text,
+                Files = filePaths,
+                CreatedAt = DateTime.UtcNow,
+                IsEdited = false
+            };
 
             await _publicationsRepository.Create(newPublication);
 
@@ -90,13 +90,15 @@ namespace iBartender.Application.Services
             if (publication.UserId != userId)
                 throw new UnauthorizedAccessException($"User {userId} is not owner of publication {id}");
 
-            var updatedPublication = Publication.Create(
-                id,
-                publication.UserId,
-                text,
-                publication.Files,
-                publication.CreatedAt,
-                true);
+            var updatedPublication = new Publication
+            {
+                Id = id,
+                UserId = publication.UserId,
+                Text = text,
+                Files = publication.Files,
+                CreatedAt = publication.CreatedAt,
+                IsEdited = true
+            };
 
             await _publicationsRepository.Update(updatedPublication);
 
@@ -130,13 +132,15 @@ namespace iBartender.Application.Services
                 newFilePaths.Add(Path.Combine("Publications", newName));
             }
 
-            var updatedPublication = Publication.Create(
-                id,
-                publication.UserId,
-                publication.Text,
-                newFilePaths,
-                publication.CreatedAt,
-                true);
+            var updatedPublication = new Publication
+            {
+                Id = id,
+                UserId = publication.UserId,
+                Text = publication.Text,
+                Files = newFilePaths,
+                CreatedAt = publication.CreatedAt,
+                IsEdited = true
+            };
 
             await _publicationsRepository.Update(updatedPublication);
 
@@ -161,8 +165,14 @@ namespace iBartender.Application.Services
 
         public async Task<Comment> CreateComment(Guid publicationId, Guid userId, string text)
         {
-            var newCommentId = Guid.NewGuid();
-            var newComment = Comment.Create(newCommentId, publicationId, userId, text, DateTimeOffset.UtcNow);
+            var newComment = new Comment
+            {
+                Id = Guid.CreateVersion7(),
+                PublicationId = publicationId,
+                UserId = userId,
+                Text = text,
+                CreatedAt = DateTime.UtcNow
+            };
 
             await _publicationsRepository.CreateComment(newComment);
             return newComment;

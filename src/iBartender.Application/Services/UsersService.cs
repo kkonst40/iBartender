@@ -59,14 +59,16 @@ namespace iBartender.Application.Services
             var newTokenId = Guid.NewGuid();
             var passwordHash = _passwordHasher.Generate(password);
 
-            var newUser = User.Create(
-                newId,
-                login,
-                email,
-                passwordHash,
-                "",
-                "",
-                newTokenId);
+            var newUser = new User
+            {
+                Id = newId,
+                Login = login,
+                Email = email,
+                PasswordHash = passwordHash,
+                Photo = "",
+                Bio = "",
+                TokenId = newTokenId
+            };
 
             await _usersRepository.Create(newUser);
             return newUser;
@@ -78,14 +80,16 @@ namespace iBartender.Application.Services
             if (user == null)
                 return null;
 
-            var updatedUser = User.Create(
-                id,
-                newLogin,
-                user.Email,
-                user.PasswordHash,
-                user.Bio,
-                user.Photo,
-                user.TokenId);
+            var updatedUser = new User
+            {
+                Id = id,
+                Login = newLogin,
+                Email = user.Email,
+                PasswordHash = user.PasswordHash,
+                Photo = user.Photo,
+                Bio = user.Bio,
+                TokenId = user.TokenId,
+            };
 
             await _usersRepository.Update(updatedUser);
             return updatedUser;
@@ -108,14 +112,16 @@ namespace iBartender.Application.Services
             var photoBytes = _imageProcessor.ProcessProfilePhoto(file, 800);
             _imageProcessor.SaveAsPng(photoBytes, newPath);
 
-            var updatedUser = User.Create(
-                id,
-                user.Login,
-                user.Email,
-                user.PasswordHash,
-                user.Bio,
-                Path.Combine("Users", newName),
-                user.TokenId);
+            var updatedUser = new User
+            {
+                Id = id,
+                Login = user.Login,
+                Email = user.Email,
+                PasswordHash = user.PasswordHash,
+                Photo = Path.Combine("Users", newName),
+                Bio = user.Bio,
+                TokenId = user.TokenId,
+            };
 
             await _usersRepository.Update(updatedUser);
 
@@ -127,14 +133,6 @@ namespace iBartender.Application.Services
 
         public async Task<User?> UpdatePassword(Guid id, string newPassword, string confirmNewPassword, string oldPassword)
         {
-            if (string.IsNullOrEmpty(newPassword)
-                || string.IsNullOrEmpty(confirmNewPassword)
-                || string.IsNullOrEmpty(oldPassword))
-                throw new InvalidPasswordException("One of the passwords is empty");
-
-            if (newPassword != confirmNewPassword)
-                throw new InvalidPasswordException("New password and confirm password are different");
-
             var user = await _usersRepository.Get(id);
 
             if (user == null)
@@ -145,14 +143,16 @@ namespace iBartender.Application.Services
 
             var newPasswordHash = _passwordHasher.Generate(newPassword);
 
-            var updatedUser = User.Create(
-                id,
-                user.Login,
-                user.Email,
-                newPasswordHash,
-                user.Bio,
-                user.Photo,
-                user.TokenId);
+            var updatedUser = new User
+            {
+                Id = id,
+                Login = user.Login,
+                Email = user.Email,
+                PasswordHash = newPasswordHash,
+                Photo = user.Photo,
+                Bio = user.Bio,
+                TokenId = user.TokenId,
+            };
 
             await _usersRepository.Update(updatedUser);
 
@@ -166,14 +166,16 @@ namespace iBartender.Application.Services
             if (user == null)
                 return null;
 
-            var updatedUser = User.Create(
-                id,
-                user.Login,
-                user.Email,
-                user.PasswordHash,
-                newBio,
-                user.Photo,
-                user.TokenId);
+            var updatedUser = new User
+            {
+                Id = id,
+                Login = user.Login,
+                Email = user.Email,
+                PasswordHash = user.PasswordHash,
+                Photo = user.Photo,
+                Bio = newBio,
+                TokenId = user.TokenId,
+            };
 
             await _usersRepository.Update(updatedUser);
 

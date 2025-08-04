@@ -6,7 +6,7 @@
         public Guid PublicationId { get; set; }
         public Guid UserId { get; set; }
         public string Text { get; set; } = string.Empty;
-        public DateTimeOffset CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; }
         public UserEntity? User { get; set; }
         public PublicationEntity? Publication { get; set; }
     }

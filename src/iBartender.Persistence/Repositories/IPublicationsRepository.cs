@@ -10,9 +10,9 @@ namespace iBartender.Persistence.Repositories
         Task Delete(Guid id);
         Task DeleteComment(Guid id);
         Task DeleteLike(Guid userId, Guid publicationId);
-        Task<Publication> Get(Guid id);
+        Task<Publication?> Get(Guid id);
         Task<List<Publication>> GetByUserId(Guid userId);
-        Task<Comment> GetComment(Guid id);
+        Task<Comment?> GetComment(Guid id);
         Task<List<Comment>> GetComments(Guid publicationId);
         Task<bool> GetLike(Guid publicationId, Guid userId);
         Task<int> GetLikesCount(Guid publicationId);

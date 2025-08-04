@@ -16,7 +16,7 @@ namespace iBartender.Persistence.Repositories
             _bartenderDbContext = bartenderDbContext;
         }
 
-        public async Task<Publication> Get(Guid id)
+        public async Task<Publication?> Get(Guid id)
         {
             var publicationEntity = await _bartenderDbContext.Publications
                 .AsNoTracking()
@@ -25,13 +25,15 @@ namespace iBartender.Persistence.Repositories
             if (publicationEntity == null)
                 return null;
 
-            var publication = Publication.Create(
-                publicationEntity.Id,
-                publicationEntity.UserId,
-                publicationEntity.Text,
-                publicationEntity.Files,
-                publicationEntity.CreatedAt,
-                publicationEntity.IsEdited);
+            var publication = new Publication
+            {
+                Id = publicationEntity.Id,
+                UserId = publicationEntity.UserId,
+                Text = publicationEntity.Text,
+                Files = publicationEntity.Files,
+                CreatedAt = publicationEntity.CreatedAt,
+                IsEdited = publicationEntity.IsEdited,
+            };
 
             return publication;
         }
@@ -57,13 +59,15 @@ namespace iBartender.Persistence.Repositories
                 resultEntities.AddRange(batchPublications);
             }
 
-            var publications = resultEntities.Select(p => Publication.Create(
-                p.Id,
-                p.UserId,
-                p.Text,
-                p.Files,
-                p.CreatedAt,
-                p.IsEdited))
+            var publications = resultEntities.Select(p => new Publication
+                {
+                    Id = p.Id,
+                    UserId = p.UserId,
+                    Text = p.Text,
+                    Files = p.Files,
+                    CreatedAt = p.CreatedAt,
+                    IsEdited = p.IsEdited,
+                })
                 .ToList();
 
             return publications;
@@ -74,13 +78,15 @@ namespace iBartender.Persistence.Repositories
             var publications = await _bartenderDbContext.Publications
                 .AsNoTracking()
                 .Where(p => p.UserId == userId)
-                .Select(p => Publication.Create(
-                p.Id,
-                p.UserId,
-                p.Text,
-                p.Files,
-                p.CreatedAt,
-                p.IsEdited))
+                .Select(p => new Publication
+                {
+                    Id = p.Id,
+                    UserId = p.UserId,
+                    Text = p.Text,
+                    Files = p.Files,
+                    CreatedAt = p.CreatedAt,
+                    IsEdited = p.IsEdited,
+                })
                 .ToListAsync();
 
             return publications;
@@ -98,13 +104,15 @@ namespace iBartender.Persistence.Repositories
                 .AsNoTracking()
                 .Where(p => subscriptions.Contains(p.UserId))
                 .OrderByDescending(p => p.CreatedAt)
-                .Select(p => Publication.Create(
-                    p.Id,
-                    p.UserId,
-                    p.Text,
-                    p.Files,
-                    p.CreatedAt,
-                    p.IsEdited))
+                .Select(p => new Publication
+                {
+                    Id = p.Id,
+                    UserId = p.UserId,
+                    Text = p.Text,
+                    Files = p.Files,
+                    CreatedAt = p.CreatedAt,
+                    IsEdited = p.IsEdited,
+                })
                 .ToListAsync();
 
             return publications;
@@ -163,18 +171,20 @@ namespace iBartender.Persistence.Repositories
                 .AsNoTracking()
                 .Where(c => c.PublicationId == publicationId)
                 .OrderBy(c => c.CreatedAt)
-                .Select(c => Comment.Create(
-                    c.Id,
-                    c.PublicationId,
-                    c.UserId,
-                    c.Text,
-                    c.CreatedAt))
+                .Select(c => new Comment
+                {
+                    Id = c.Id,
+                    PublicationId = c.PublicationId,
+                    UserId = c.UserId,
+                    Text = c.Text,
+                    CreatedAt = c.CreatedAt
+                })
                 .ToListAsync();
 
             return comments;
         }
         
-        public async Task<Comment> GetComment(Guid id)
+        public async Task<Comment?> GetComment(Guid id)
         {
             var commentEntity = await _bartenderDbContext.Comments
                 .AsNoTracking()
@@ -183,12 +193,14 @@ namespace iBartender.Persistence.Repositories
             if (commentEntity == null)
                 return null;
 
-            var comment = Comment.Create(
-                commentEntity.Id,
-                commentEntity.PublicationId,
-                commentEntity.UserId,
-                commentEntity.Text,
-                commentEntity.CreatedAt);
+            var comment = new Comment
+            {
+                Id = commentEntity.Id,
+                PublicationId = commentEntity.PublicationId,
+                UserId = commentEntity.UserId,
+                Text = commentEntity.Text,
+                CreatedAt = commentEntity.CreatedAt
+            };
 
             return comment;
         }

@@ -5,7 +5,7 @@
         public Guid Id { get; set; }
         public string Text { get; set; } = string.Empty;
         public List<string> Files { get; set; } = [];
-        public DateTimeOffset CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; }
         public bool IsEdited { get; set; }
 
         public Guid UserId { get; set; }

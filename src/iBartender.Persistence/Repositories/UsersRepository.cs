@@ -25,14 +25,16 @@ namespace iBartender.Persistence.Repositories
             if (userEntity == null)
                 return null;
 
-            var user = User.Create(
-                userEntity.Id,
-                userEntity.Login,
-                userEntity.Email,
-                userEntity.PasswordHash,
-                userEntity.Bio,
-                userEntity.Photo,
-                userEntity.TokenId);
+            var user = new User
+            {
+                Id = userEntity.Id,
+                Login = userEntity.Login,
+                Email = userEntity.Email,
+                PasswordHash = userEntity.PasswordHash,
+                Photo = userEntity.Photo,
+                Bio = userEntity.Bio,
+                TokenId = userEntity.TokenId
+            };
 
             return user;
         }
@@ -46,14 +48,16 @@ namespace iBartender.Persistence.Repositories
             if (userEntity == null)
                 return null;
 
-            var user = User.Create(
-                userEntity.Id,
-                userEntity.Login,
-                userEntity.Email,
-                userEntity.PasswordHash,
-                userEntity.Bio,
-                userEntity.Photo,
-                userEntity.TokenId);
+            var user = new User
+            {
+                Id = userEntity.Id,
+                Login = userEntity.Login,
+                Email = userEntity.Email,
+                PasswordHash = userEntity.PasswordHash,
+                Photo = userEntity.Photo,
+                Bio = userEntity.Bio,
+                TokenId = userEntity.TokenId
+            };
 
             return user;
         }
@@ -67,14 +71,16 @@ namespace iBartender.Persistence.Repositories
             if (userEntity == null)
                 return null;
 
-            var user = User.Create(
-                userEntity.Id,
-                userEntity.Login,
-                userEntity.Email,
-                userEntity.PasswordHash,
-                userEntity.Bio,
-                userEntity.Photo,
-                userEntity.TokenId);
+            var user = new User
+            {
+                Id = userEntity.Id,
+                Login = userEntity.Login,
+                Email = userEntity.Email,
+                PasswordHash = userEntity.PasswordHash,
+                Photo = userEntity.Photo,
+                Bio = userEntity.Bio,
+                TokenId = userEntity.TokenId
+            };
 
             return user;
         }
@@ -101,14 +107,16 @@ namespace iBartender.Persistence.Repositories
                 resultEntities.AddRange(batchUsers);
             }
 
-            return resultEntities.Select(u => User.Create(
-                u.Id,
-                u.Login,
-                u.Email,
-                u.PasswordHash,
-                u.Bio,
-                u.Photo,
-                u.TokenId))
+            return resultEntities.Select(u => new User
+                {
+                    Id = u.Id,
+                    Login = u.Login,
+                    Email = u.Email,
+                    PasswordHash = u.PasswordHash,
+                    Photo = u.Photo,
+                    Bio = u.Bio,
+                    TokenId = u.TokenId
+                })
                 .ToList();
         }
 
@@ -212,14 +220,16 @@ namespace iBartender.Persistence.Repositories
             if (user == null)
                 return new List<User>();
 
-            var subscribers = user.Subscribers.Select(us => User.Create(
-                us.Subscriber.Id,
-                us.Subscriber.Login,
-                us.Subscriber.Email,
-                "",
-                us.Subscriber.Bio,
-                us.Subscriber.Photo,
-                us.Subscriber.TokenId));
+            var subscribers = user.Subscribers.Select(us => new User
+                {
+                    Id = us.Subscriber.Id,
+                    Login = us.Subscriber.Login,
+                    Email = us.Subscriber.Email,
+                    PasswordHash = "",
+                    Photo = us.Subscriber.Photo,
+                    Bio = us.Subscriber.Bio,
+                    TokenId = us.Subscriber.TokenId
+                 });
 
             return subscribers.ToList();
         }
@@ -235,14 +245,16 @@ namespace iBartender.Persistence.Repositories
             if (user == null)
                 return new List<User>();
 
-            return user.Subscriptions.Select(us => User.Create(
-                us.User.Id,
-                us.User.Login,
-                us.User.Email,
-                "",
-                us.User.Bio,
-                us.User.Photo,
-                us.User.TokenId))
+            return user.Subscriptions.Select(us => new User
+                {
+                    Id = us.Subscriber.Id,
+                    Login = us.Subscriber.Login,
+                    Email = us.Subscriber.Email,
+                    PasswordHash = "",
+                    Photo = us.Subscriber.Photo,
+                    Bio = us.Subscriber.Bio,
+                    TokenId = us.Subscriber.TokenId
+                })
                 .ToList();
         }
 
