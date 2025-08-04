@@ -6,6 +6,8 @@ using iBartender.Persistence;
 using iBartender.Persistence.Repositories;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.EntityFrameworkCore;
+using FluentValidation.Validators;
+using FluentValidation;
 
 namespace IBartender.API
 {
@@ -42,10 +44,13 @@ namespace IBartender.API
             builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
             builder.Services.AddScoped<IJwtProvider, JwtProvider>();
             builder.Services.AddScoped<IImageProcessor, ImageProcessor>();
-            builder.Services.AddScoped<ICredentialsValidator, CredentialsValidator>();
+            builder.Services.AddScoped<iBartender.Application.Utils.IEmailValidator, EmailValidator>();
 
             builder.Services.AddScoped<IUsersRepository, UsersRepository>();
             builder.Services.AddScoped<IPublicationsRepository, PublicationsRepository>();
+
+            builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
+
 
 
             var app = builder.Build();

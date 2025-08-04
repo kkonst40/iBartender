@@ -1,8 +1,10 @@
-﻿using iBartender.API.Contracts.Publications;
+﻿using FluentValidation;
+using iBartender.API.Contracts.Publications;
 using iBartender.Application.Services;
 using iBartender.Core.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 
 namespace iBartender.API.Controllers
@@ -42,14 +44,20 @@ namespace iBartender.API.Controllers
 
         [Authorize]
         [HttpPost]
-        public async Task<ActionResult> Create([FromForm] CreatePublicationRequest request)
+        public async Task<ActionResult> Create(
+            [FromForm] CreatePublicationRequest request,
+            [FromServices] IValidator<CreatePublicationRequest> validator)
         {
+            var validationResults = await validator.ValidateAsync(request);
+            if (!validationResults.IsValid)
+                return BadRequest(validationResults.ToDictionary());
+
             var userId = Guid.Parse(User.FindFirst("id").Value);
 
             var publication = await _publicationsService.Create(
                 userId,
-                request.text,
-                request.files,
+                request.Text,
+                request.Files,
                 _appEnvironment.WebRootPath);
 
             var response = new GetPublicationResponse(
@@ -65,13 +73,15 @@ namespace iBartender.API.Controllers
 
         [Authorize]
         [HttpPut("{publicationId:guid}/files")]
-        public async Task<ActionResult> UpdateFiles(Guid publicationId, [FromForm] UpdatePublicationRequest request)
+        public async Task<ActionResult> UpdateFiles(
+            Guid publicationId,
+            [FromForm] UpdatePublicationFilesRequest request)
         {
             var userId = Guid.Parse(User.FindFirst("id").Value);
 
             var publication = await _publicationsService.UpdateFiles(
                 publicationId,
-                request.files,
+                request.Files,
                 _appEnvironment.WebRootPath,
                 userId);
 
@@ -91,13 +101,20 @@ namespace iBartender.API.Controllers
 
         [Authorize]
         [HttpPut("{publicationId:guid}/text")]
-        public async Task<ActionResult> UpdateText(Guid publicationId, [FromForm] UpdatePublicationRequest request)
+        public async Task<ActionResult> UpdateText(
+            Guid publicationId,
+            [FromForm] UpdatePublicationTextRequest request,
+            [FromServices] IValidator<UpdatePublicationTextRequest> validator)
         {
+            var validationResults = await validator.ValidateAsync(request);
+            if (!validationResults.IsValid)
+                return BadRequest(validationResults.ToDictionary());
+
             var userId = Guid.Parse(User.FindFirst("id").Value);
             
             var publication = await _publicationsService.UpdateText(
                 publicationId,
-                request.text,
+                request.Text,
                 userId);
 
             if (publication == null)
@@ -143,11 +160,18 @@ namespace iBartender.API.Controllers
 
         [Authorize]
         [HttpPost("{publicationId:guid}/comment")]
-        public async Task<ActionResult> AddComment(Guid publicationId, [FromBody] CreateCommentRequest request)
+        public async Task<ActionResult> AddComment(
+            Guid publicationId,
+            [FromBody] CreateCommentRequest request,
+            [FromServices] IValidator<CreateCommentRequest> validator)
         {
+            var validationResults = await validator.ValidateAsync(request);
+            if (!validationResults.IsValid)
+                return BadRequest(validationResults.ToDictionary());
+
             var userId = Guid.Parse(User.FindFirst("id").Value);
 
-            var comment = await _publicationsService.CreateComment(publicationId, userId, request.text);
+            var comment = await _publicationsService.CreateComment(publicationId, userId, request.Text);
 
             var response = new GetCommentResponse(
                 comment.Id,

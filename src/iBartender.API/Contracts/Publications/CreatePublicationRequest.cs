@@ -1,6 +1,6 @@
 ﻿namespace iBartender.API.Contracts.Publications
 {
     public record CreatePublicationRequest(
-        string text,
-        IFormFileCollection files);
+        string Text,
+        IFormFileCollection Files);
 }

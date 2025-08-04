@@ -12,9 +12,9 @@ namespace iBartender.Application.Services
         private readonly IUsersRepository _usersRepository;
         private readonly IPasswordHasher _passwordHasher;
         private readonly IImageProcessor _imageProcessor;
-        private readonly ICredentialsValidator _credentialsValidator;
+        private readonly IEmailValidator _credentialsValidator;
 
-        public UsersService(IUsersRepository usersRepository, IPasswordHasher passwordHasher, IImageProcessor imageValidator, ICredentialsValidator credentialsValidator)
+        public UsersService(IUsersRepository usersRepository, IPasswordHasher passwordHasher, IImageProcessor imageValidator, IEmailValidator credentialsValidator)
         {
             _usersRepository = usersRepository;
             _passwordHasher = passwordHasher;
@@ -52,14 +52,8 @@ namespace iBartender.Application.Services
 
         public async Task<User> Create(string login, string email, string password)
         {
-            if (!_credentialsValidator.ValidateEmail(email))
-                throw new InvalidCredentialsException("Email is not valid");
-
-            if (!_credentialsValidator.ValidateLogin(login))
-                throw new InvalidCredentialsException("Login is not valid");
-
-            if (!_credentialsValidator.ValidatePassword(password))
-                throw new InvalidCredentialsException("Password is not valid");
+            if (!_credentialsValidator.Validate(email))
+                throw new InvalidCredentialsException("Email does not exist.");
 
             var newId = Guid.CreateVersion7();
             var newTokenId = Guid.NewGuid();
@@ -147,7 +141,7 @@ namespace iBartender.Application.Services
                 return null;
 
             if (!_passwordHasher.Verify(oldPassword, user.PasswordHash))
-                throw new InvalidPasswordException("Incorrect current password");
+                throw new InvalidPasswordException("Old password is incorrect.");
 
             var newPasswordHash = _passwordHasher.Generate(newPassword);
 
@@ -157,6 +151,27 @@ namespace iBartender.Application.Services
                 user.Email,
                 newPasswordHash,
                 user.Bio,
+                user.Photo,
+                user.TokenId);
+
+            await _usersRepository.Update(updatedUser);
+
+            return updatedUser;
+        }
+
+        public async Task<User?> UpdateBio(Guid id, string newBio)
+        {
+            var user = await _usersRepository.Get(id);
+
+            if (user == null)
+                return null;
+
+            var updatedUser = User.Create(
+                id,
+                user.Login,
+                user.Email,
+                user.PasswordHash,
+                newBio,
                 user.Photo,
                 user.TokenId);
 

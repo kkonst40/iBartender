@@ -1,7 +1,9 @@
-﻿using iBartender.API.Contracts.Users;
+﻿using FluentValidation;
+using iBartender.API.Contracts.Users;
 using iBartender.Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 
 namespace iBartender.API.Controllers
@@ -10,12 +12,12 @@ namespace iBartender.API.Controllers
     [Route("api/[controller]")]
     public class UsersController : ControllerBase
     {
-        private readonly IUsersService _userService;
+        private readonly IUsersService _usersService;
         private readonly IWebHostEnvironment _appEnvironment;
 
         public UsersController(IUsersService usersService, IWebHostEnvironment appEnvironment)
         {
-            _userService = usersService;
+            _usersService = usersService;
             _appEnvironment = appEnvironment;
         }
 
@@ -23,7 +25,7 @@ namespace iBartender.API.Controllers
         [HttpGet("{userId:guid}")]
         public async Task<ActionResult> GetUser(Guid userId)
         {
-            var user = await _userService.Get(userId);
+            var user = await _usersService.Get(userId);
 
             if (user == null)
                 return NotFound();
@@ -37,7 +39,7 @@ namespace iBartender.API.Controllers
         [HttpGet("{userId:guid}/subscribers")]
         public async Task<ActionResult> GetSubscribers(Guid userId)
         {
-            var users = await _userService.GetSubscribers(userId);
+            var users = await _usersService.GetSubscribers(userId);
 
             var response = users.Select(u => new GetUserResponse(u.Id, u.Login, u.Bio, u.Photo));
 
@@ -48,16 +50,22 @@ namespace iBartender.API.Controllers
         [HttpGet("{userId:guid}/subscribtions")]
         public async Task<ActionResult> GetSubscribtions(Guid userId)
         {
-            var users = await _userService.GetSubscribtions(userId);
+            var users = await _usersService.GetSubscribtions(userId);
             var response = users.Select(u => new GetUserResponse(u.Id, u.Login, u.Bio, u.Photo));
 
             return Ok(response);
         }
 
         [HttpPost]
-        public async Task<ActionResult> Create([FromBody] CreateUserRequest request)
+        public async Task<ActionResult> Create(
+            [FromBody] CreateUserRequest request,
+            [FromServices] IValidator<CreateUserRequest> validator)
         {
-            var newUser = await _userService.Create(request.login, request.email, request.password);
+            var validationResults = await validator.ValidateAsync(request);
+            if (!validationResults.IsValid)
+                return BadRequest(validationResults.ToDictionary());
+
+            var newUser = await _usersService.Create(request.Login, request.Email, request.Password);
             var response = new GetUserResponse(newUser.Id, newUser.Login, newUser.Bio, newUser.Photo);
 
             return Ok(response);
@@ -68,7 +76,7 @@ namespace iBartender.API.Controllers
         public async Task<ActionResult> Subscribe([FromBody] SubscribeRequest request)
         {
             var userId = Guid.Parse(User.FindFirst("id").Value);
-            await _userService.Subscribe(request.userId, userId);
+            await _usersService.Subscribe(request.UserId, userId);
 
             return NoContent();
         }
@@ -78,20 +86,26 @@ namespace iBartender.API.Controllers
         public async Task<ActionResult> Unsubscribe([FromBody] SubscribeRequest request)
         {
             var userId = Guid.Parse(User.FindFirst("id").Value);
-            await _userService.Unsubscribe(request.userId, userId);
+            await _usersService.Unsubscribe(request.UserId, userId);
 
             return NoContent();
         }
 
         [Authorize]
         [HttpPut("login")]
-        public async Task<ActionResult> UpdateLogin([FromBody] UpdateUserLogin request)
+        public async Task<ActionResult> UpdateLogin(
+            [FromBody] UpdateUserLoginRequest request,
+            [FromServices] IValidator<UpdateUserLoginRequest> validator)
         {
+            var validationResults = await validator.ValidateAsync(request);
+            if (!validationResults.IsValid)
+                return BadRequest(validationResults.ToDictionary());
+
             var userId = Guid.Parse(User.FindFirst("id").Value);
 
-            var updatedUser = await _userService.UpdateLogin(
+            var updatedUser = await _usersService.UpdateLogin(
                 userId,
-                request.newLogin);
+                request.NewLogin);
 
             if (updatedUser == null)
                 return NotFound();
@@ -108,13 +122,13 @@ namespace iBartender.API.Controllers
 
         [Authorize]
         [HttpPut("photo")]
-        public async Task<ActionResult> UpdatePhoto([FromForm] UpdateUserPhoto request)
+        public async Task<ActionResult> UpdatePhoto([FromForm] UpdateUserPhotoRequest request)
         {
             var userId = Guid.Parse(User.FindFirst("id").Value);
 
-            var updatedUser = await _userService.UpdatePhoto(
+            var updatedUser = await _usersService.UpdatePhoto(
                 userId,
-                request.newPhoto,
+                request.NewPhoto,
                 _appEnvironment.WebRootPath);
 
             if (updatedUser == null)
@@ -132,15 +146,49 @@ namespace iBartender.API.Controllers
 
         [Authorize]
         [HttpPut("password")]
-        public async Task<ActionResult> UpdatePassword([FromBody] UpdateUserPassword request)
+        public async Task<ActionResult> UpdatePassword(
+            [FromBody] UpdateUserPasswordRequest request,
+            [FromServices] IValidator<UpdateUserPasswordRequest> validator)
         {
+            var validationResults = await validator.ValidateAsync(request);
+            if (!validationResults.IsValid)
+                return BadRequest(validationResults.ToDictionary());
+
             var userId = Guid.Parse(User.FindFirst("id").Value);
 
-            var updatedUser = await _userService.UpdatePassword(
+            var updatedUser = await _usersService.UpdatePassword(
                 userId,
-                request.newPassword,
-                request.newPasswordConfirm,
-                request.oldPassword);
+                request.NewPassword,
+                request.NewPasswordConfirm,
+                request.OldPassword);
+
+            if (updatedUser == null)
+                return NotFound();
+
+            var response = new GetUserResponse(
+                updatedUser.Id,
+                updatedUser.Login,
+                updatedUser.Bio,
+                updatedUser.Photo);
+
+            return Ok(response);
+        }
+
+        [Authorize]
+        [HttpPut("bio")]
+        public async Task<ActionResult> UpdateBio(
+            [FromBody] UpdateUserBioRequest request,
+            [FromServices] IValidator<UpdateUserBioRequest> validator)
+        {
+            var validationResults = await validator.ValidateAsync(request);
+            if (!validationResults.IsValid)
+                return BadRequest(validationResults.ToDictionary());
+
+            var userId = Guid.Parse(User.FindFirst("id").Value);
+
+            var updatedUser = await _usersService.UpdateBio(
+                userId,
+                request.NewBio);
 
             if (updatedUser == null)
                 return NotFound();
@@ -161,7 +209,7 @@ namespace iBartender.API.Controllers
         {
             var userId = Guid.Parse(User.FindFirst("id").Value);
 
-            await _userService.Delete(userId);
+            await _usersService.Delete(userId);
             return NoContent();
         }
     }

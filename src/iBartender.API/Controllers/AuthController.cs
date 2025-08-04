@@ -1,4 +1,5 @@
-﻿using iBartender.API.Contracts.Users;
+﻿using FluentValidation;
+using iBartender.API.Contracts.Users;
 using iBartender.Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,9 +18,15 @@ namespace iBartender.API.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult> Login([FromBody] LoginUserRequest request)
+        public async Task<ActionResult> Login(
+            [FromBody] LoginUserRequest request,
+            [FromServices] IValidator<LoginUserRequest> validator)
         {
-            var token = await _authService.Login(request.email, request.password);
+            var validationResults = await validator.ValidateAsync(request);
+            if (!validationResults.IsValid)
+                return BadRequest(validationResults.ToDictionary());
+
+            var token = await _authService.Login(request.Email, request.Password);
             HttpContext.Response.Cookies.Append("pechenye", token);
 
             return NoContent();
