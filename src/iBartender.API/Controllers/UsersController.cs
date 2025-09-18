@@ -20,6 +20,11 @@ namespace iBartender.API.Controllers
             _usersService = usersService;
             _appEnvironment = appEnvironment;
         }
+        [HttpGet]
+        public ActionResult GetTestHello()
+        {
+            return Ok("Hello, World!");
+        }
 
         [Authorize]
         [HttpGet("{userId:guid}")]
